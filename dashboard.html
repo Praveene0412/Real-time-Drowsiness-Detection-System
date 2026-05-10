@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Drowsiness Detection System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+        
+        .btn-success:hover {
+            box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+        
+        .btn-danger:hover {
+            box-shadow: 0 10px 20px rgba(231, 76, 60, 0.3);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+        
+        .btn-warning:hover {
+            box-shadow: 0 10px 20px rgba(243, 156, 18, 0.3);
+        }
+        
+        .contact-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+            position: relative;
+        }
+        
+        .contact-item h4 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .contact-item p {
+            color: #7f8c8d;
+            margin: 3px 0;
+        }
+        
+        .contact-item .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .alert-item {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .alert-item.critical {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        
+        .alert-item h4 {
+            color: #856404;
+            margin-bottom: 5px;
+        }
+        
+        .alert-item.critical h4 {
+            color: #721c24;
+        }
+        
+        .alert-item p {
+            color: #856404;
+            margin: 3px 0;
+        }
+        
+        .alert-item.critical p {
+            color: #721c24;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-active {
+            background: #27ae60;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-inactive {
+            background: #e74c3c;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .stat-item h3 {
+            color: #3498db;
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        
+        .stat-item p {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .location-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .location-info h4 {
+            color: #1976d2;
+            margin-bottom: 5px;
+        }
+        
+        .location-info p {
+            color: #424242;
+            margin: 3px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚗 Drowsiness Detection Dashboard</h1>
+            <p>Real-time monitoring and emergency management system</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2>🎯 System Status</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <h3>{{ total_alerts if total_alerts is defined else alerts|length }}</h3>
+                        <p>Total Alerts</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>{{ contacts|length }}</h3>
+                        <p>Emergency Contacts</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3><span class="status-indicator status-active"></span>Active</h3>
+                        <p>System Status</p>
+                    </div>
+                </div>
+                
+                <div class="location-info">
+                    <h4>📍 Current Location</h4>
+                    <p id="location-text">Detecting location...</p>
+                    <button onclick="refreshLocation()" class="btn btn-warning">Refresh Location</button>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <button id="startDetectionButton" class="btn btn-success">🚀 Start Detection</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>👥 Emergency Contacts</h2>
+                {% if contacts %}
+                    {% for contact in contacts %}
+                        <div class="contact-item">
+                            <h4>{{ contact[1] }}</h4>
+                            <p>📧 {{ contact[2] if contact[2] else 'No email' }}</p>
+                            <p>📱 {{ contact[3] if contact[3] else 'No phone' }}</p>
+                            <p>🔗 {{ contact[4] if contact[4] else 'Not specified' }}</p>
+                            <form action="{{ url_for('delete_contact', contact_id=contact[0]) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="delete-btn" 
+                                    onclick="return confirm('Are you sure you want to delete this contact?')">×</button>
+                        </form>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="color: #7f8c8d; text-align: center; padding: 20px;">
+                        No emergency contacts configured. 
+                        <a href="{{ url_for('setup') }}" style="color: #3498db;">Add contacts now</a>
+                    </p>
+                {% endif %}
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="{{ url_for('setup') }}" class="btn">➕ Add Contact</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>🚨 Recent Drowsiness Alerts</h2>
+            {% if alerts %}
+                {% for alert in alerts %}
+                    <div class="alert-item {% if loop.index <= 3 %}critical{% endif %}">
+                        <h4>{{ alert[1] }}</h4>
+                        <p>📍 Location: {{ alert[3] if alert[3] else 'Unknown' }}</p>
+                        <p>👁️ Eye Aspect Ratio: {{ "%.3f"|format(alert[2]) }}</p>
+                        <p>📧 Notifications Sent: {{ 'Yes' if alert[4] else 'No' }}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p style="color: #27ae60; text-align: center; padding: 20px;">
+                    ✅ No drowsiness alerts detected yet. System is ready!
+                </p>
+            {% endif %}
+        </div>
+        
+        <div class="navigation">
+            <a href="{{ url_for('setup') }}" class="btn">⚙️ Settings</a>
+            <a href="{{ url_for('index') }}" class="btn">🏠 Home</a>
+            <a href="{{ url_for('about') }}" class="btn">ℹ️ About</a>
+        </div>
+    </div>
+    
+    <script>
+        function updateLocation() {
+            fetch('/get_location')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('location-text').textContent = data.address || 'Location not available';
+                })
+                .catch(error => {
+                    console.error('Error fetching location:', error);
+                    document.getElementById('location-text').textContent = 'Error fetching location';
+                });
+        }
+        
+        function refreshLocation() {
+            updateLocation();
+        }
+        
+        function startDetection() {
+            // Start detection and redirect to detection page in same window
+            fetch('/start_detection')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Detection started:', data);
+                    if (data.status === 'success') {
+                        // Redirect to detection page in same window
+                        window.location.href = '/detection_page';
+                    } else {
+                        alert('Error starting detection: ' + (data.error || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error starting detection:', error);
+                    alert('Error starting detection. Please try again.');
+                });
+        }
+        
+        // Add event listener for start detection button
+        document.addEventListener('DOMContentLoaded', function() {
+            const startButton = document.getElementById('startDetectionButton');
+            if (startButton) {
+                startButton.addEventListener('click', startDetection);
+            }
+        });
+        
+        // Auto-refresh location every 30 seconds
+        setInterval(updateLocation, 30000);
+        
+        // Auto-refresh alerts every 10 seconds
+        function refreshAlerts() {
+            fetch('/get_recent_alerts')
+                .then(response => response.json())
+                .then(data => {
+                    // Update total alert count
+                    const totalAlertsElement = document.querySelector('.stat-item h3');
+                    if (totalAlertsElement && data.total_alerts !== undefined) {
+                        totalAlertsElement.textContent = data.total_alerts;
+                    }
+                    
+                    // Update recent alerts list
+                    const alertsList = document.querySelector('.alerts-list');
+                    if (alertsList && data.recent_alerts) {
+                        alertsList.innerHTML = '';
+                        data.recent_alerts.forEach(alert => {
+                            const alertItem = document.createElement('div');
+                            alertItem.className = 'alert-item';
+                            alertItem.innerHTML = `
+                                <div class="alert-time">${alert.timestamp || 'Unknown'}</div>
+                                <div><strong>Alert Detected</strong> - EAR: ${alert.ear || 'N/A'}</div>
+                                <div>📍 ${alert.location || 'Unknown location'}</div>
+                            `;
+                            alertsList.appendChild(alertItem);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error refreshing alerts:', error);
+                });
+        }
+        
+        // Auto-refresh alerts every 10 seconds
+        setInterval(refreshAlerts, 10000);
+        
+        updateLocation();
+        refreshAlerts();
+    </script>
+</html>

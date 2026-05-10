@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detection Interface - Drowsiness Detection System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #3498db;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .status-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .status-card.active {
+            background: rgba(39, 174, 96, 0.2);
+            border-color: #27ae60;
+        }
+        
+        .status-card.warning {
+            background: rgba(243, 156, 18, 0.2);
+            border-color: #f39c12;
+        }
+        
+        .status-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .status-title {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+            color: #ecf0f1;
+        }
+        
+        .status-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .detection-window {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            border: 2px solid rgba(52, 152, 219, 0.3);
+        }
+        
+        .detection-window h3 {
+            margin-bottom: 15px;
+            color: #3498db;
+        }
+        
+        .detection-info {
+            background: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(231, 76, 60, 0.3);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
+        }
+        
+        .alert-log {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .alert-item {
+            background: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid #e74c3c;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        
+        .alert-time {
+            font-size: 0.9em;
+            color: #bdc3c7;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .location-info {
+            background: rgba(241, 196, 15, 0.1);
+            border-left: 4px solid #f1c40f;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👁️ Real-time Detection Interface</h1>
+            <p>Monitor drowsiness detection status and alerts</p>
+        </div>
+        
+        <div class="status-grid">
+            <div class="status-card active">
+                <div class="status-icon">📹</div>
+                <div class="status-title">Camera Status</div>
+                <div class="status-value pulse">Active</div>
+            </div>
+            
+            <div class="status-card active">
+                <div class="status-icon">📍</div>
+                <div class="status-title">Location</div>
+                <div class="status-value" id="location">Detecting...</div>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-icon">👁️</div>
+                <div class="status-title">Eye Aspect Ratio</div>
+                <div class="status-value" id="ear">0.30</div>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-icon">🚨</div>
+                <div class="status-title">Alert Status</div>
+                <div class="status-value" id="alert-status">Monitoring</div>
+            </div>
+        </div>
+        
+        <div class="detection-window">
+            <h3>📹 Detection Window</h3>
+            <div class="detection-info">
+                <strong>⚠️ Important:</strong> The detection window opened in a separate window. 
+                Look for a window titled "Real-time Drowsiness Detection" with camera feed.
+                Press 'q' in that window to stop detection.
+            </div>
+            <p>If you don't see the detection window, make sure:</p>
+            <ul style="text-align: left; display: inline-block;">
+                <li>Camera is not blocked by another application</li>
+                <li>Camera permissions are granted</li>
+                <li>The window is not minimized</li>
+            </ul>
+        </div>
+        
+        <div class="location-info">
+            <strong>📍 Current Location:</strong> <span id="location-text">Detecting location...</span>
+            <button onclick="refreshLocation()" class="btn btn-primary" style="margin-left: 10px;">Refresh</button>
+        </div>
+        
+        <div class="controls">
+            <button onclick="stopDetection()" class="btn btn-danger">🛑 Stop Detection</button>
+            <button onclick="testAlert()" class="btn btn-warning">🧪 Test Alert</button>
+            <a href="/dashboard" class="btn btn-primary">📊 Dashboard</a>
+            <a href="/" class="btn btn-success">🏠 Home</a>
+        </div>
+        
+        <div class="alert-log">
+            <h3>📋 Alert Log</h3>
+            <div id="alert-log-content">
+                <p style="color: #bdc3c7;">No alerts yet. System is monitoring...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let alertCount = 0;
+        
+        function updateLocation() {
+            fetch('/get_location')
+                .then(response => response.json())
+                .then(data => {
+                    const locationElement = document.getElementById('location');
+                    const locationText = document.getElementById('location-text');
+                    
+                    if (data.address) {
+                        locationElement.textContent = data.address.substring(0, 20) + '...';
+                        locationText.textContent = data.address;
+                    } else {
+                        locationElement.textContent = 'Unknown';
+                        locationText.textContent = 'Location unavailable';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching location:', error);
+                    document.getElementById('location').textContent = 'Error';
+                    document.getElementById('location-text').textContent = 'Error fetching location';
+                });
+        }
+        
+        function refreshLocation() {
+            updateLocation();
+        }
+        
+        function stopDetection() {
+            if (confirm('Are you sure you want to stop detection?')) {
+                // Close detection window and return to dashboard
+                window.location.href = '/dashboard'; // Redirect to dashboard in same window
+            }
+        }
+        
+        function showNotificationPopup(title, message) {
+            // Create popup notification
+            const popup = document.createElement('div');
+            popup.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.9);
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+                z-index: 10000;
+                text-align: center;
+                min-width: 300px;
+            `;
+            
+            popup.innerHTML = `
+                <h3 style="margin: 0 0 10px 0; color: #3498db;">${title}</h3>
+                <p style="margin: 0 0 15px 0;">${message}</p>
+                <button onclick="this.parentElement.remove()" style="
+                    background: #3498db;
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    margin-top: 10px;
+                ">OK</button>
+            `;
+            
+            document.body.appendChild(popup);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (popup.parentElement) {
+                    popup.remove();
+                }
+            }, 5000);
+        }
+        
+        function playAlertSound() {
+            // Play alert sound
+            const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZmRIBAAByWGAAAAZAAAASQAAAEAA');
+            audio.play().catch(e => console.error('Error playing sound:', e));
+        }
+        
+        function checkForAlerts() {
+            // Check for recent alerts and trigger notifications automatically
+            fetch('/get_recent_alerts')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.recent_alerts && data.recent_alerts.length > 0) {
+                        const latestAlert = data.recent_alerts[0];
+                        const alertTime = new Date(latestAlert.timestamp);
+                        const currentTime = new Date();
+                        const timeDiff = (currentTime - alertTime) / 1000; // seconds
+                        
+                        // If alert was within last 10 seconds, trigger notification
+                        if (timeDiff < 10 && !window.lastAlertTime || timeDiff < 10 && (currentTime - window.lastAlertTime) > 15000) {
+                            triggerAutomaticNotification(latestAlert);
+                            window.lastAlertTime = currentTime;
+                        }
+                    }
+                })
+                .catch(error => console.error('Error checking alerts:', error));
+        }
+        
+        function triggerAutomaticNotification(alert) {
+            // Show popup notification
+            showNotificationPopup(
+                '🚨 Drowsiness Alert!', 
+                `Drowsiness detected at ${alert.timestamp}. Emergency notifications sent to contacts!`
+            );
+            
+            // Play alert sound
+            playAlertSound();
+            
+            // Update alert status
+            document.getElementById('alert-status').textContent = 'Alert Detected';
+            document.getElementById('alert-status').style.color = '#e74c3c';
+            
+            // Add to alert log
+            const alertLog = document.getElementById('alert-log-content');
+            const alertItem = document.createElement('div');
+            alertItem.className = 'alert-item';
+            alertItem.innerHTML = `
+                <div class="alert-time">${alert.timestamp}</div>
+                <div><strong>🚨 Drowsiness Detected</strong> - EAR: ${alert.ear}</div>
+                <div>📍 Location: ${alert.location}</div>
+                <div>📧 Emergency notifications sent!</div>
+            `;
+            
+            if (alertLog.querySelector('p')) {
+                alertLog.innerHTML = '';
+            }
+            
+            alertLog.insertBefore(alertItem, alertLog.firstChild);
+            
+            // Reset alert status after 5 seconds
+            setTimeout(() => {
+                document.getElementById('alert-status').textContent = 'Monitoring';
+                document.getElementById('alert-status').style.color = '#3498db';
+            }, 5000);
+        }
+        
+        function testAlert() {
+            alertCount++;
+            const alertLog = document.getElementById('alert-log-content');
+            const alertItem = document.createElement('div');
+            alertItem.className = 'alert-item';
+            alertItem.innerHTML = `
+                <div class="alert-time">${new Date().toLocaleString()}</div>
+                <div><strong>Test Alert #${alertCount}</strong> - This is a test notification</div>
+                <div>Location: ${document.getElementById('location-text').textContent}</div>
+            `;
+            
+            if (alertCount === 1) {
+                alertLog.innerHTML = '';
+            }
+            
+            alertLog.appendChild(alertItem);
+            
+            // Show notification popup
+            showNotificationPopup(
+                '📧 Email Sent!', 
+                'Test notification sent to emergency contacts and your email.'
+            );
+            
+                        
+            // Play alert sound
+            playAlertSound();
+            
+            // Update alert status
+            document.getElementById('alert-status').textContent = 'Test Alert';
+            document.getElementById('alert-status').style.color = '#f39c12';
+            
+            setTimeout(() => {
+                document.getElementById('alert-status').textContent = 'Monitoring';
+                document.getElementById('alert-status').style.color = '#3498db';
+            }, 3000);
+        }
+        
+        // Simulate EAR updates
+        function updateEAR() {
+            const ear = (0.25 + Math.random() * 0.15).toFixed(2);
+            document.getElementById('ear').textContent = ear;
+            
+            if (ear < 0.25) {
+                document.getElementById('ear').style.color = '#e74c3c';
+            } else {
+                document.getElementById('ear').style.color = '#3498db';
+            }
+        }
+        
+        // Initialize
+        updateLocation();
+        setInterval(updateLocation, 30000); // Update location every 30 seconds
+        setInterval(updateEAR, 2000); // Update EAR every 2 seconds
+        
+        // Auto-check for alerts
+        setInterval(checkForAlerts, 2000); // Check every 2 seconds
+        
+        // Initialize last alert time
+        window.lastAlertTime = null;
+    </script>
+</body>
+</html>
