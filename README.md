@@ -1,73 +1,59 @@
-📌 Project Overview
+# 🚗 Real-Time Drowsiness Detection System
 
-Driver drowsiness is one of the major causes of road accidents worldwide. This project aims to detect driver fatigue in real time using a webcam and trigger alerts when drowsiness is identified.
+This is an AI-based real-time drowsiness detection system that monitors driver alertness using Eye Aspect Ratio (EAR) and facial landmark detection. The system detects eye closure through a webcam and alerts the driver using alarms, Email, and SMS notifications along with live location tracking to improve road safety.
 
-The system continuously monitors the driver's eye movements using the Eye Aspect Ratio (EAR) method with Dlib facial landmarks. When the EAR value falls below a threshold for consecutive frames, the system:
+---
 
-Detects drowsiness
-Plays an alarm sound
-Captures screenshots
-Sends Email notifications
-Sends SMS alerts
-Stores alert history in database
-Displays monitoring information in a Flask dashboard
-🚀 Features
+## ✨ Features
 
-✅ Real-time driver drowsiness detection
-✅ Eye Aspect Ratio (EAR) based detection
-✅ Facial landmark detection using Dlib
-✅ Alarm alert system
-✅ Screenshot capture during detection
-✅ Email notifications using SMTP
-✅ SMS notifications using Twilio
-✅ Live location tracking using IP-based geolocation
-✅ Flask web dashboard
-✅ SQLite database integration
-✅ Emergency contact management
-✅ Alert history monitoring
+- 👁️ Real-Time Eye Monitoring using Webcam
+- 🧠 Drowsiness Detection using Eye Aspect Ratio (EAR)
+- 📍 Live Location Tracking using IP-based Geolocation
+- 🔔 Alarm Alert System for Driver Warning
+- 📧 Email Notification System using SMTP
+- 📱 SMS Alerts using Twilio API
+- 📸 Automatic Screenshot Capture during Detection
+- 🌐 Flask Web Dashboard for Monitoring
+- 🗄️ SQLite Database for Alert History & Contacts
+- 👥 Emergency Contact Management
 
-🛠️ Technologies Used
-Frontend
-HTML
-CSS
-JavaScript
-Backend
-Python
-Flask
-Computer Vision & AI
-OpenCV
-Dlib
-NumPy
-Imutils
-Database
-SQLite
-Notification Services
-SMTP (Gmail)
-Twilio API
-Additional Libraries
-Geopy
-Requests
-Playsound
-🧠 Detection Methodology
+---
 
-The system uses Dlib’s 68 Facial Landmark Detector to identify eye coordinates from the webcam feed.
+## 🛠️ Technologies Used
 
-Eye Landmark Points
-Right Eye → Points 36–41
-Left Eye → Points 42–47
+### 👨‍💻 Programming Language
+- Python
 
-The Eye Aspect Ratio (EAR) is calculated using vertical and horizontal eye distances.
+### 🌐 Frontend
+- HTML
+- CSS
+- JavaScript
 
-EAR Formula:
+### ⚙️ Backend
+- Flask
 
-EAR=(∣∣p2−p6∣∣+∣∣p3−p5∣∣)/(2∣∣p1−p4∣∣)
-Detection Logic
-If EAR > Threshold → Eyes Open
-If EAR < Threshold → Eyes Closed
+### 🤖 Computer Vision & AI
+- OpenCV
+- Dlib
+- NumPy
+- Imutils
 
-When the EAR value remains below 0.25 for 30 consecutive frames, the system identifies drowsiness.
+### 🗄️ Database
+- SQLite
 
-📂 Project Structure
+### 📡 Notification Services
+- SMTP (Gmail)
+- Twilio API
+
+### 📍 Location Services
+- Requests API
+- Geopy
+
+---
+
+## 📂 Project Structure
+
+```text
 Drowsiness-Detection-System/
 │
 ├── app.py
@@ -76,140 +62,83 @@ Drowsiness-Detection-System/
 ├── init_database.py
 ├── requirements_new.txt
 ├── README.md
-├── drowsiness_data.db
 │
 ├── templates/
-│   ├── index.html
-│   ├── setup.html
-│   ├── dashboard.html
-│   └── about.html
-│
 ├── static/
-│
 ├── Screenshots/
 │
+├── drowsiness_data.db
 ├── shape_predictor_68_face_landmarks.dat
 └── sound1.mp3
-⚙️ Installation & Setup
-1️⃣ Clone Repository
-git clone https://github.com/yourusername/drowsiness-detection-system.git
-2️⃣ Open Project Folder
-cd drowsiness-detection-system
-3️⃣ Create Virtual Environment
-Windows
+```
+
+---
+
+## ▶️ How to Run
+
+### 1️⃣ Create Virtual Environment
+
+```bash
 python -m venv venv
+```
 
-Activate environment:
+### 2️⃣ Activate Environment
 
+```bash
 venv\Scripts\activate
-4️⃣ Install Dependencies
+```
+
+### 3️⃣ Install Requirements
+
+```bash
 pip install -r requirements_new.txt
-5️⃣ Configure Email & SMS
+```
 
-Update config.py with:
+### 4️⃣ Initialize Database
 
-Gmail App Password
-Twilio SID
-Twilio Auth Token
-Twilio Phone Number
-6️⃣ Initialize Database
+```bash
 python init_database.py
-7️⃣ Run Flask Application
+```
+
+### 5️⃣ Run Flask Application
+
+```bash
 python app.py
+```
 
-Open browser:
+Open in browser:
 
+```text
 http://127.0.0.1:5000
-📸 Running Real-Time Detection
+```
 
-Run:
+### 6️⃣ Start Real-Time Detection
 
+```bash
 python realtime_detection.py
+```
 
-Controls:
+---
 
-Key	Action
-q	Quit detection
-r	Refresh location
-t	Test notifications
-📧 Email Notification Setup
+## 📈 Future Enhancements
 
-To enable Email alerts:
+- 🤖 CNN-based Deep Learning Detection
+- 📱 Mobile Application Integration
+- ☁️ Cloud Deployment Support
+- 🚘 Multi-Driver Monitoring
+- 🌙 Improved Low-Light Detection
+- 📊 Advanced Analytics Dashboard
 
-Enable 2-Step Verification in Gmail
-Generate Gmail App Password
-Add App Password in config.py
+---
 
-Example:
+## 🎯 Conclusion
 
-EMAIL_CONFIG = {
-    'smtp_server': 'smtp.gmail.com',
-    'smtp_port': 587,
-    'sender_email': 'your_email@gmail.com',
-    'sender_password': 'your_app_password'
-}
-📱 SMS Notification Setup
+This project successfully demonstrates a real-time AI-powered drowsiness detection system using computer vision and facial landmark analysis. The system helps improve driver safety by detecting fatigue early and sending instant alerts and emergency notifications.
 
-Create a Twilio account and update:
+---
 
-SMS_CONFIG = {
-    'account_sid': 'your_sid',
-    'auth_token': 'your_token',
-    'twilio_phone_number': '+1234567890'
-}
-🗄️ Database Tables
-user_settings
+## 👨‍💻 Developed By
 
-Stores:
-
-User email
-Phone number
-emergency_contacts
-
-Stores:
-
-Contact details
-Relationship
-drowsiness
-
-Stores:
-
-Timestamp
-EAR value
-Location
-Notification status
-🌐 Web Dashboard
-
-The Flask dashboard provides:
-
-Real-time monitoring
-Alert history
-Emergency contact management
-User configuration
-Detection controls
-📈 Future Enhancements
-Deep Learning based detection
-CNN integration
-Mobile application support
-Cloud deployment
-GPS hardware integration
-Multi-driver detection
-Higher accuracy under low lighting
-⚠️ Limitations
-Requires webcam access
-Performance depends on lighting conditions
-Cloud deployment cannot access local webcam
-Current system works on local machine
-🎯 Conclusion
-
-This project successfully demonstrates a real-time AI-based drowsiness detection system using facial landmark detection and Eye Aspect Ratio analysis. The system helps improve driver safety by detecting fatigue early and providing immediate alerts and emergency notifications.
-
-👨‍💻 Developed By
-
-Praveen E
+**Praveene**  
 
 Sri Krishna Institute of Technology
-
-📜 License
-
-This project is developed for educational and research purposes.
