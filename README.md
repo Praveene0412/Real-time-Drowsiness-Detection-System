@@ -139,6 +139,6 @@ This project successfully demonstrates a real-time AI-powered drowsiness detecti
 
 ## 👨‍💻 Developed By
 
-**Praveene**  
+**Praveen E**  
 
 Sri Krishna Institute of Technology
